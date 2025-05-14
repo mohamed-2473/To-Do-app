@@ -1,0 +1,31 @@
+<div class="container mt-4">
+    <h2 class="text-center mb-4">To-Do List</h2>
+    
+    @if (errorMessage) {
+        <div class="alert alert-warning text-center">
+            {{ errorMessage }}
+        </div>
+    }
+    
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form class="input-group mb-3" (ngSubmit)="onSubmit()">
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    placeholder="Add a new task..."
+                    [(ngModel)]="taskText"
+                    name="taskText"
+                    required
+                >
+                <button 
+                    class="btn btn-primary" 
+                    type="submit"
+                    [disabled]="!taskText.trim()"
+                >
+                    <i class="bi bi-plus-circle"></i> Add Task
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

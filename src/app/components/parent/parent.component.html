@@ -1,0 +1,11 @@
+<div class="container">
+    <app-to-do-form 
+      (addTask)="addNewTask($event)"
+      [errorMessage]="duplicateTaskError"
+    ></app-to-do-form>
+    <app-to-do-list 
+      [tasks]="tasks"
+      (updateTask)="updateTask($event)"
+      (deleteTask)="deleteTask($event)"
+    ></app-to-do-list>
+</div>
