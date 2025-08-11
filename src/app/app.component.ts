@@ -8,5 +8,5 @@ import { ParentComponent } from "./components/parent/parent.component";
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'Lab3';
+  title = 'my-task-manager';
 }

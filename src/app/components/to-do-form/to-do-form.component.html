@@ -1,31 +1,165 @@
-<div class="container mt-4">
-    <h2 class="text-center mb-4">To-Do List</h2>
-    
-    @if (errorMessage) {
-        <div class="alert alert-warning text-center">
-            {{ errorMessage }}
-        </div>
-    }
-    
+<div class="container-fluid mb-4">
+  <!-- Error Message -->
+  @if (errorMessage) {
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <form class="input-group mb-3" (ngSubmit)="onSubmit()">
-                <input 
+      <div class="col-md-8">
+        <div class="alert alert-warning alert-dismissible fade show text-center">
+          <i class="bi bi-exclamation-triangle"></i>
+          {{ errorMessage }}
+        </div>
+      </div>
+    </div>
+  }
+  
+  <!-- Main Form -->
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-plus-circle"></i> Add New Task
+          </h5>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="onSubmit()">
+            <!-- Main Input -->
+            <div class="row mb-3">
+              <div class="col-md-8">
+                <label for="taskInput" class="form-label">Task Description *</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="bi bi-pencil"></i>
+                  </span>
+                  <input 
+                    id="taskInput"
                     type="text" 
-                    class="form-control" 
-                    placeholder="Add a new task..."
+                    class="form-control form-control-lg" 
+                    placeholder="What needs to be done?"
                     [(ngModel)]="taskText"
                     name="taskText"
                     required
-                >
+                    maxlength="200"
+                  >
+                </div>
+                <div class="form-text">{{ taskText.length }}/200 characters</div>
+              </div>
+              
+              <!-- Quick Priority -->
+              <div class="col-md-4">
+                <label class="form-label">Priority</label>
+                <div class="btn-group w-100" role="group">
+                  <input 
+                    type="radio" 
+                    class="btn-check" 
+                    name="priority" 
+                    id="priority-low"
+                    value="low"
+                    [(ngModel)]="selectedPriority"
+                  >
+                  <label class="btn btn-outline-success btn-sm" for="priority-low">
+                    <i class="bi bi-arrow-down"></i> Low
+                  </label>
+                  
+                  <input 
+                    type="radio" 
+                    class="btn-check" 
+                    name="priority" 
+                    id="priority-medium"
+                    value="medium"
+                    [(ngModel)]="selectedPriority"
+                  >
+                  <label class="btn btn-outline-warning btn-sm" for="priority-medium">
+                    <i class="bi bi-dash"></i> Med
+                  </label>
+                  
+                  <input 
+                    type="radio" 
+                    class="btn-check" 
+                    name="priority" 
+                    id="priority-high"
+                    value="high"
+                    [(ngModel)]="selectedPriority"
+                  >
+                  <label class="btn btn-outline-danger btn-sm" for="priority-high">
+                    <i class="bi bi-arrow-up"></i> High
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Advanced Options Toggle -->
+            <div class="row mb-3">
+              <div class="col-12">
                 <button 
-                    class="btn btn-primary" 
-                    type="submit"
-                    [disabled]="!taskText.trim()"
+                  type="button" 
+                  class="btn btn-link btn-sm p-0" 
+                  (click)="toggleAdvanced()"
                 >
-                    <i class="bi bi-plus-circle"></i> Add Task
+                  <i class="bi" [class.bi-chevron-right]="!showAdvanced" [class.bi-chevron-down]="showAdvanced"></i>
+                  {{ showAdvanced ? 'Hide' : 'Show' }} Advanced Options
                 </button>
-            </form>
+              </div>
+            </div>
+
+            <!-- Advanced Options -->
+            <div class="collapse" [class.show]="showAdvanced">
+              <div class="row mb-3">
+                <!-- Category -->
+                <div class="col-md-6">
+                  <label for="categorySelect" class="form-label">Category</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="bi bi-tag"></i>
+                    </span>
+                    <select 
+                      id="categorySelect"
+                      class="form-select" 
+                      [(ngModel)]="selectedCategory"
+                      name="category"
+                    >
+                      <option value="">Select Category</option>
+                      @for (category of categories; track category) {
+                        <option [value]="category">{{ category }}</option>
+                      }
+                    </select>
+                  </div>
+                </div>
+                
+                <!-- Due Date -->
+                <div class="col-md-6">
+                  <label for="dueDateInput" class="form-label">Due Date</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="bi bi-calendar"></i>
+                    </span>
+                    <input 
+                      id="dueDateInput"
+                      type="date" 
+                      class="form-control"
+                      [(ngModel)]="dueDate"
+                      name="dueDate"
+                      [min]="minDate"
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Section -->
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <button 
+                class="btn btn-primary btn-lg"
+                [class]="'btn-' + getPriorityColor(selectedPriority)"
+                type="submit"
+                [disabled]="!taskText.trim()"
+              >
+                <i class="bi bi-plus-circle"></i> 
+                Add {{ selectedPriority.charAt(0).toUpperCase() + selectedPriority.slice(1) }} Priority Task
+              </button>
+            </div>
+          </form>
         </div>
+      </div>
     </div>
+  </div>
 </div>

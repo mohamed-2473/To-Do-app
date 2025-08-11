@@ -1,11 +1,175 @@
-<div class="container">
-    <app-to-do-form 
-      (addTask)="addNewTask($event)"
-      [errorMessage]="duplicateTaskError"
-    ></app-to-do-form>
-    <app-to-do-list 
-      [tasks]="tasks"
-      (updateTask)="updateTask($event)"
-      (deleteTask)="deleteTask($event)"
-    ></app-to-do-list>
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <!-- Header with Statistics -->
+      <div class="text-center mb-4">
+        <h1 class="display-4 text-primary mb-3">
+          <i class="bi bi-check2-square"></i> To-Do List
+        </h1>
+        
+        <!-- Progress Bar -->
+        <div class="progress mb-3 mx-auto" style="max-width: 400px; height: 25px;">
+          <div 
+            class="progress-bar progress-bar-striped progress-bar-animated" 
+            [style.width.%]="completionPercentage"
+            [class.bg-success]="completionPercentage === 100"
+            [class.bg-warning]="completionPercentage > 0 && completionPercentage < 100"
+            [class.bg-secondary]="completionPercentage === 0"
+          >
+            {{ completionPercentage }}% Complete
+          </div>
+        </div>
+        
+        <!-- Statistics Cards -->
+        <div class="row justify-content-center mb-4">
+          <div class="col-md-2 col-6 mb-2">
+            <div class="card bg-primary text-white">
+              <div class="card-body text-center py-2">
+                <h5 class="card-title mb-1">{{ totalTasks }}</h5>
+                <p class="card-text small mb-0">Total</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2 col-6 mb-2">
+            <div class="card bg-warning text-dark">
+              <div class="card-body text-center py-2">
+                <h5 class="card-title mb-1">{{ activeTasks }}</h5>
+                <p class="card-text small mb-0">Active</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2 col-6 mb-2">
+            <div class="card bg-success text-white">
+              <div class="card-body text-center py-2">
+                <h5 class="card-title mb-1">{{ completedTasks }}</h5>
+                <p class="card-text small mb-0">Done</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task Form -->
+      <app-to-do-form 
+        (addTask)="addNewTask($event)"
+        [errorMessage]="duplicateTaskError"
+        [categories]="categories"
+      ></app-to-do-form>
+      
+      <!-- Controls Section -->
+      <div class="row justify-content-center mb-4">
+        <div class="col-md-10">
+          <div class="card">
+            <div class="card-body">
+              <div class="row g-3">
+                <!-- Search -->
+                <div class="col-md-4">
+                  <label class="form-label small">Search Tasks</label>
+                  <div class="input-group input-group-sm">
+                    <span class="input-group-text">
+                      <i class="bi bi-search"></i>
+                    </span>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      placeholder="Search by text or category..."
+                      [(ngModel)]="searchTerm"
+                      (ngModelChange)="updateSearch($event)"
+                    >
+                  </div>
+                </div>
+                
+                <!-- Category Filter -->
+                <div class="col-md-3">
+                  <label class="form-label small">Filter by Category</label>
+                  <select 
+                    class="form-select form-select-sm" 
+                    [(ngModel)]="selectedCategory"
+                    (ngModelChange)="updateCategoryFilter($event)"
+                  >
+                    <option value="">All Categories</option>
+                    @for (category of categories; track category) {
+                      <option [value]="category">{{ category }}</option>
+                    }
+                  </select>
+                </div>
+                
+                <!-- Status Filter -->
+                <div class="col-md-2">
+                  <label class="form-label small">Status</label>
+                  <select 
+                    class="form-select form-select-sm" 
+                    [(ngModel)]="currentFilter"
+                    (ngModelChange)="setFilter($event)"
+                  >
+                    <option value="all">All Tasks</option>
+                    <option value="active">Active</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                </div>
+                
+                <!-- Sort Options -->
+                <div class="col-md-3">
+                  <label class="form-label small">Sort by</label>
+                  <select 
+                    class="form-select form-select-sm" 
+                    [(ngModel)]="currentSort"
+                    (ngModelChange)="setSort($event)"
+                  >
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="priority">Priority</option>
+                    <option value="dueDate">Due Date</option>
+                    <option value="alphabetical">A-Z</option>
+                  </select>
+                </div>
+              </div>
+              
+              <!-- Bulk Actions -->
+              <div class="row mt-3" *ngIf="totalTasks > 0">
+                <div class="col-12">
+                  <div class="btn-toolbar justify-content-center" role="toolbar">
+                    <div class="btn-group btn-group-sm me-2" role="group">
+                      <button 
+                        type="button" 
+                        class="btn btn-outline-success"
+                        (click)="markAllComplete()"
+                        [disabled]="completedTasks === totalTasks"
+                      >
+                        <i class="bi bi-check-all"></i> Complete All
+                      </button>
+                      <button 
+                        type="button" 
+                        class="btn btn-outline-warning"
+                        (click)="markAllIncomplete()"
+                        [disabled]="activeTasks === totalTasks"
+                      >
+                        <i class="bi bi-arrow-counterclockwise"></i> Reset All
+                      </button>
+                      <button 
+                        type="button" 
+                        class="btn btn-outline-danger"
+                        (click)="deleteCompletedTasks()"
+                        [disabled]="completedTasks === 0"
+                      >
+                        <i class="bi bi-trash"></i> Clear Completed
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task List -->
+      <app-to-do-list 
+        [tasks]="filteredTasks"
+        [categories]="categories"
+        (updateTask)="updateTask($event)"
+        (deleteTask)="deleteTask($event)"
+      ></app-to-do-list>
+    </div>
+  </div>
 </div>
